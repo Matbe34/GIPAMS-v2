@@ -1,0 +1,15 @@
+gcs/ApplicationConfig.class
+gcs/Utils/MPEGFileUtil.class
+gcs/Utils/UrlUtil.class
+gcs/Security/RestSecurityFilter.class
+gcs/Utils/EncryptionUtil.class
+gcs/Utils/AccessUnitUtil.class
+gcs/Utils/JWTUtil.class
+gcs/Utils/ProtectionUtil.class
+gcs/Utils/DatasetUtil.class
+gcs/Utils/MetadataUtil.class
+gcs/Utils/FileUtil.class
+gcs/Security/Secured.class
+gcs/Utils/Utils.class
+gcs/GCS.class
+gcs/Utils/DatasetGroupUtil.class

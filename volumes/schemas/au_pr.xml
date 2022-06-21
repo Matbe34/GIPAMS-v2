@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AccessUnitProtection xmlns="urn:mpeg:mpeg-g:protection:access-unit:2019" 
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                      xsi:schemaLocation="urn:mpeg:mpeg-g:protection:access-unit:2019 
+                        /opt/GCService/schemas/ISOIEC_23092-3_Annex_A5_aupr_schema_SL.xsd">
+    <AccessUnitEncryptionParameters>
+	<wrappedKey configurationID="19">
+            1FcMIMa0QhOTgNMpkn+j3THvWp7bgCwFJ64FEn+/D6z6VoCLx6xKeA==
+        </wrappedKey>
+        <cipher>urn:mpeg:mpeg-g:protection:aes128-ctr</cipher>
+        <aublockIV>YWJjZGVmMTIzNDU2Nzg5MA==</aublockIV>
+        <aublockTAG>b3RoZXJ0ZXN0VEFH</aublockTAG>
+    </AccessUnitEncryptionParameters>
+</AccessUnitProtection>
+
+

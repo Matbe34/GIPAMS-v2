@@ -1,0 +1,170 @@
+version: "3.9"
+services:
+  gcs-c4gh:
+    build: GCS-C4GH
+    volumes:
+      - /home/alumne/.m2:/root/.m2
+      - ./volumes/C4GH:/opt/C4GH
+    networks:
+      private-net:
+        ipv4_address: 192.168.183.121
+    depends_on:
+      - authentication-service
+  
+  authorization-service:
+    build: Authorization-Service
+    volumes:
+      - /home/alumne/.m2:/root/.m2
+    networks:
+      private-net:
+        ipv4_address: 192.168.183.120
+    depends_on:
+      - authentication-service
+  
+  policy-service:
+    build: Policy-Service
+    volumes:
+      - /home/alumne/.m2:/root/.m2
+    networks:
+      private-net:
+        ipv4_address: 192.168.183.119
+    depends_on:
+      - authentication-service
+  
+  protection-service:
+    build: Protection-Service
+    volumes:
+      - /home/alumne/.m2:/root/.m2
+    networks:
+      private-net:
+        ipv4_address: 192.168.183.118
+    depends_on:
+      - authentication-service
+      - database
+      - gcs
+  
+  search-service:
+    build: Search-Service
+    volumes:
+      - /home/alumne/.m2:/root/.m2
+    networks:
+      private-net:
+        ipv4_address: 192.168.183.117
+    depends_on:
+      - authentication-service
+      - database
+  
+  gcs:
+    build: Genomic-Content-Service
+    volumes:
+      - /home/alumne/.m2:/root/.m2
+      - ./volumes/gcs:/resources
+
+    networks:
+      private-net:
+        ipv4_address: 192.168.183.116
+    depends_on:
+      - authentication-service
+      - database
+  
+  workflow-manager:
+    build: Workflow-Manager
+    volumes:
+      - /home/alumne/.m2:/root/.m2
+    networks:
+      private-net:
+        ipv4_address: 192.168.183.115
+      public-net:
+        ipv4_address: 192.168.12.4
+    depends_on:
+      - authentication-service
+      - database
+      - gcs
+      - authorization-service
+      - search-service
+#    links:
+#      - gcs
+#      - search-service
+#      - protection-service
+#      - policy-service
+#      - authorization-service
+#      - gcs-c4gh
+#      - authentication-service
+  
+  user-application:
+    build: User-Application
+    volumes:
+      - /home/alumne/.m2:/root/.m2
+    ports:
+      - "8080:8080"
+    networks:
+      public-net:
+        ipv4_address: 192.168.12.3
+    depends_on:
+      - workflow-manager
+      - nginx_rproxy
+    links:
+      - authentication-service
+      - workflow-manager
+      
+  database:
+    image: mysql/mysql-server:latest
+    volumes:
+      - ./volumes/db/init.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./volumes/db/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+    networks:
+      private-net:
+        ipv4_address: 192.168.183.114
+
+  authentication-service:
+    image: quay.io/keycloak/keycloak:13.0.1
+    restart: unless-stopped
+    volumes:
+      - ./volumes/keycloak/standalone:/opt/jboss/keycloak/standalone/
+    networks:
+      private-net:
+        ipv4_address: 192.168.183.113
+      public-net:
+        ipv4_address: 192.168.12.2
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: tRetN3*%cggfVAxx
+      PROXY_ADDRESS_FORWARDING: "true"
+      REDIRECT_SOCKET: "proxy-http"
+      CONFIDENTIAL-PORT: 443
+
+  nginx_rproxy:
+    image: nginx:latest
+    restart: unless-stopped
+    volumes:
+      - ./volumes/proxy/nginx.conf:/etc/nginx/nginx.conf
+      - ./volumes/proxy/certs:/etc/certs
+    ports:
+      - "443:443"
+    networks:
+      private-net:
+        ipv4_address: 192.168.183.112
+      public-net:
+        ipv4_address: 192.168.12.5
+    depends_on:
+      - authentication-service
+
+networks:
+  private-net:
+    name: private-net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.183.0/24
+          gateway: 192.168.183.1
+
+  public-net:
+    name: public-net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.12.0/24
+          gateway: 192.168.12.1
+

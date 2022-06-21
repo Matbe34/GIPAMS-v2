@@ -1,0 +1,8 @@
+wm/Security/Secured.class
+wm/WM_Crypt4GH.class
+wm/Utils/JWTUtil.class
+wm/WM_GCS.class
+wm/WM_SS.class
+wm/ApplicationConfig.class
+wm/Security/RestSecurityFilter.class
+wm/Utils/UrlUtil.class
